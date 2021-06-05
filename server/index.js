@@ -26,6 +26,13 @@ io.on("connection", (socket) => {
       totalUsers: users.getUsers(),
     });
   });
+  socket.on("rename-user", ({ name }) => {
+    users.rename(socket.id, name);
+    io.emit("rename-user", {
+      id: socket.id,
+      totalUsers: users.getUsers(),
+    });
+  });
   socket.on("started-typing", ({ user }) => {
     io.emit("user-started-typing", { name: user });
   });
@@ -37,5 +44,5 @@ io.on("connection", (socket) => {
     io.emit("user-disconnect", { id: socket.id, totalUsers: users.getUsers() });
   });
 });
-
+console.log("Running on port: ", process.env.PORT || 5000);
 express.listen(process.env.PORT || 5000);

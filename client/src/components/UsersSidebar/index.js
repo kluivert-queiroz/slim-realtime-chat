@@ -22,6 +22,9 @@ const UsersSidebar = ({ className }) => {
       console.log(user, "disconnect");
       removeUser(user.id);
     });
+    socket.on("rename-user", ({ totalUsers }) => {
+      setUsers(totalUsers);
+    });
   }, []);
   return (
     <div className={className}>

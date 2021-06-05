@@ -9,8 +9,10 @@ import {
 } from "@material-ui/core";
 import React from "react";
 import { useDispatch } from "react-redux";
+import { SocketContext } from "../../context/socket";
 
 const ChangeNicknameModal = React.forwardRef((props, ref) => {
+  const socket = React.useContext(SocketContext);
   const dispatch = useDispatch();
   const [open, setState] = React.useState(false);
   const [nickname, setNickname] = React.useState("");
@@ -24,28 +26,30 @@ const ChangeNicknameModal = React.forwardRef((props, ref) => {
     setState(false);
   };
   const handleChange = (e) => {
-    setNickname(e.target.value.slice(0,15));
+    setNickname(e.target.value.slice(0, 15));
   };
-	const handleKeyDown = (e) => {
-		if(e.key === "Enter") submitNickname();
-	}
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") submitNickname();
+  };
   const submitNickname = () => {
     dispatch({ type: "SET_NICKNAME", nickname });
-		setState(false);
+    socket.emit("rename-user", { name: nickname });
+    setState(false);
   };
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>Change nickname</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          You can choose any nickname you want. But it must be less than 15 characters.
+          You can choose any nickname you want. But it must be less than 15
+          characters.
         </DialogContentText>
         <TextField
           autoFocus
           fullWidth
           value={nickname}
           onChange={handleChange}
-					onKeyDown={handleKeyDown}
+          onKeyDown={handleKeyDown}
         />
         <DialogActions>
           <Button onClick={handleClose} variant="outlined" color="secondary">
