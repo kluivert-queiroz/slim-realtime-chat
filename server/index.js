@@ -38,4 +38,4 @@ io.on("connection", (socket) => {
   });
 });
 
-express.listen(3000);
+express.listen(process.env.PORT || 5000);
