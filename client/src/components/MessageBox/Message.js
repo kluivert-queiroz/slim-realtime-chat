@@ -3,7 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import ReactMarkdown from "react-markdown";
 import gfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import {vscDarkPlus as highlightStyle} from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { vscDarkPlus as highlightStyle } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import { styled, Typography } from "@material-ui/core";
 const Message = ({ message, user, renderUserName, date, className }) => {
@@ -26,7 +26,7 @@ const Message = ({ message, user, renderUserName, date, className }) => {
         <Typography component="div" className="message" variant="body1">
           <ReactMarkdown
             components={{
-              code: ({node, inline, className, children, ...props}) => {
+              code: ({ node, inline, className, children, ...props }) => {
                 const match = /language-(\w+)/.exec(className || "");
                 return !inline && match ? (
                   <SyntaxHighlighter
@@ -77,6 +77,10 @@ export default styled((other) => <Message {...other} />)({
     },
     "& ul": {
       lineHeight: "0.5rem",
+    },
+    "& a": {
+      color: "#1c75fb",
+      textDecoration: "inherit",
     },
   },
   "& .user": {
