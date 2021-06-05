@@ -1,0 +1,15 @@
+html, body, #root {
+	height: 100%
+}
+*::-webkit-scrollbar {
+  width: 12px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #40444b;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #2f3237;
+  border-radius: 20px;
+}
