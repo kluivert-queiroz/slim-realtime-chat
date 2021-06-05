@@ -13,7 +13,7 @@ const TextArea = React.forwardRef(
 
     React.useImperativeHandle(ref, () => ({
       getContent: () => value,
-			setValue: (newVal) => setValue(newVal),
+      setValue: (newVal) => setValue(newVal),
     }));
     React.useEffect(() => {
       if (!isTyping && value !== "") {
@@ -39,16 +39,27 @@ const TextArea = React.forwardRef(
       if (stateSelectionEnd >= 0) {
         textArea.selectionEnd = stateSelectionEnd;
       }
+      resize();
     }, [value, stateSelectionStart, stateSelectionEnd]);
+    const resize = () => {
+      const textArea = txtInput.current;
+      if (!textArea) {
+        return;
+      }
+      while (textArea.scrollHeight > textArea.clientHeight) {
+        textArea.rows = textArea.rows + 1;
+      }
+      if (textArea.value === "") textArea.rows = 1;
+    };
     const handleChange = (e) => {
       setValue(e.target.value);
     };
     const handleKeyDown = (e) => {
-			if (e.key === "Enter" && !e.shiftKey) {
-				onSubmit(value);
-				e.preventDefault();
-				return;
-			}
+      if (e.key === "Enter" && !e.shiftKey) {
+        onSubmit(value);
+        e.preventDefault();
+        return;
+      }
       const textArea = e.target;
       const tabString = " ".repeat(tabSize);
 
@@ -60,7 +71,11 @@ const TextArea = React.forwardRef(
         e.preventDefault();
 
         if (selectionStart !== selectionEnd) {
-          const slices1 = getNewLineSlices(txtValue, selectionStart, selectionEnd);
+          const slices1 = getNewLineSlices(
+            txtValue,
+            selectionStart,
+            selectionEnd
+          );
           const newValue1 = addTabs(txtValue, slices1, tabString);
 
           setValue(newValue1);
@@ -85,7 +100,11 @@ const TextArea = React.forwardRef(
       } else if (e.key === "Tab" && e.shiftKey) {
         e.preventDefault();
 
-        const slices2 = getNewLineSlices(txtValue, selectionStart, selectionEnd);
+        const slices2 = getNewLineSlices(
+          txtValue,
+          selectionStart,
+          selectionEnd
+        );
         const newValue3 = removeTabs(txtValue, slices2, tabSize);
 
         const diff = txtValue.length - newValue3.length;
@@ -201,7 +220,7 @@ const TextArea = React.forwardRef(
         ref={txtInput}
         value={value}
         onChange={handleChange}
-				onKeyDown={handleKeyDown}
+        onKeyDown={handleKeyDown}
       />
     );
   }
