@@ -16,7 +16,7 @@ const User = ({ name, me, className }) => {
           </Typography>
         </div>
       </Tooltip>
-      <ChangeNicknameModal ref={modalRef} />
+      {me && <ChangeNicknameModal ref={modalRef} />}
     </div>
   );
 };
