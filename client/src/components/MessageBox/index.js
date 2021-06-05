@@ -37,8 +37,9 @@ const MessageBox = (props) => {
   }, []);
   return (
     <div className={`${props.className} toolbar`} ref={containerRef}>
-      {messages.map(({ message, user, date }, idx, arr) => (
+      {messages.map(({ id, message, user, date }, idx, arr) => (
         <Message
+          key={id}
           message={message}
           user={user}
           date={date}

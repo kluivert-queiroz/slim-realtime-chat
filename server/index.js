@@ -1,5 +1,8 @@
 const { server: express, app } = require("./server");
 const { Server } = require("socket.io");
+const { 
+  v1: uuidv1,
+} = require('uuid');
 const UserMap = require("./src/UserMap");
 
 const io = new Server(express, {
@@ -16,7 +19,7 @@ const users = new UserMap();
 
 io.on("connection", (socket) => {
   socket.on("send-message", (message) => {
-    io.emit("new-message", message);
+    io.emit("new-message", {...message, id: uuidv1()});
   });
   socket.on("user-connected", ({ user }) => {
     users.addUser({ id: socket.id, name: user });
