@@ -107,6 +107,7 @@ export default styled((other) => <TextBox {...other} />)({
     color: "#b9bbbe",
   },
   "& .textbox": {
+    fontFamily: 'Montserrat',
     padding: "0.5rem",
     width: "100%",
     height: "100%",
