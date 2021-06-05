@@ -10,47 +10,22 @@ import React from "react";
 import SendIcon from "@material-ui/icons/Send";
 import { useSelector } from "react-redux";
 import { SocketContext } from "../../context/socket";
-const SECOND = 1000;
+import TextArea from "./TextArea";
+
 const TextBox = ({ className }) => {
   const socket = React.useContext(SocketContext);
   const me = useSelector((state) => state.name);
-  const [value, setValue] = React.useState("");
-  const [isTyping, setIsTyping] = React.useState(false);
   const [usersTyping, setUsersTyping] = React.useState([]);
   const textArea = React.useRef();
-  const handleChange = (e) => {
-    setValue(e.target.value);
-  };
-  const handleKeyDown = (e) => {
-    e.persist();
-    if (e.key === "Enter" && !e.shiftKey) {
-      sendMessage(value);
-      e.preventDefault();
-      return;
-    }
-  };
   const handleClick = (e) => {
-    sendMessage(value);
+    sendMessage(textArea.current.getContent());
   };
   const sendMessage = (message) => {
-    if (value === "") return;
+    if (message === "") return;
     socket.emit("send-message", { message, user: me, date: new Date() });
-    setValue("");
+    textArea.current.setValue('');
     textArea.current.selectionStart = textArea.current.selectionEnd = 0;
   };
-  React.useEffect(() => {
-    if (!isTyping && value !== "") {
-      setIsTyping(true);
-      socket.emit("started-typing", { user: me });
-    }
-    const stopTimer = setTimeout(() => {
-      setIsTyping(false);
-      socket.emit("stopped-typing", { user: me });
-    }, SECOND * 2);
-    return () => {
-      clearTimeout(stopTimer);
-    };
-  }, [value, me]);
   React.useEffect(() => {
     socket.on("user-started-typing", (user) => {
       setUsersTyping((users) => [...users, user]);
@@ -72,15 +47,14 @@ const TextBox = ({ className }) => {
       )}
       <Grid container direction="row" className={className}>
         <Grid item xs={11}>
-          <textarea
+          <TextArea
             ref={textArea}
             className="textbox"
-            value={value}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
+            onSubmit={sendMessage}
             placeholder="Type something here..."
             multiple
             maxLength="1000"
+            me={me}
           />
         </Grid>
         <Grid item xs={1}>
@@ -107,7 +81,7 @@ export default styled((other) => <TextBox {...other} />)({
     color: "#b9bbbe",
   },
   "& .textbox": {
-    fontFamily: 'Montserrat',
+    fontFamily: "Montserrat",
     padding: "0.5rem",
     width: "100%",
     height: "100%",

@@ -2,7 +2,7 @@ html, body, #root {
 	height: 100%
 }
 *::-webkit-scrollbar {
-  width: 12px;
+  width: 0.5rem;
 }
 
 *::-webkit-scrollbar-track {
