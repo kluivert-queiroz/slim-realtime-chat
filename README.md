@@ -4,7 +4,7 @@ A basic real-time chat made using only socket.io and React.
 
 You can view the demo [here](http://slim-realtime-chat.herokuapp.com)
 ## QuickStart
-Clone the project and just run
+Clone the project, copy `client/.env.example` to `client/.env` and just run
 `
 docker-compose up
 `
