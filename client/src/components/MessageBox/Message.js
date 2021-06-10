@@ -26,6 +26,11 @@ const Message = ({ message, user, renderUserName, date, className }) => {
         <Typography component="div" className="message" variant="body1">
           <ReactMarkdown
             components={{
+              a: ({ children, ...props }) => (
+                <a {...props} target="_blank" rel="noopener noreferrer">
+                  {children}
+                </a>
+              ),
               code: ({ node, inline, className, children, ...props }) => {
                 const match = /language-(\w+)/.exec(className || "");
                 return !inline && match ? (
