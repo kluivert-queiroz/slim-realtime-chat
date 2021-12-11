@@ -1,18 +1,34 @@
 class UserMap {
-  #users = [];
+  #users = new Map();
   getUsers() {
-    return this.#users;
+    return Array.from(this.#users.values());
   }
-  addUser = (user) => {
-    this.#users.push(user);
+  findUser(sessionID) {
+    console.log(sessionID, [...this.#users.values()]);
+    return this.#users.get(sessionID);
+  }
+  addUser = ({ sessionID, id, username, socketID }) => {
+    const socketIds = this.#users.get(sessionID)?.socketIds || [];
+    socketIds.push(socketID);
+    this.#users.set(sessionID, {
+      id,
+      username,
+      socketIds,
+      sessionID,
+      connected: true,
+    });
+    console.log("users", [...this.#users.values()]);
   };
-  removeUser = (userId) => {
-    this.#users = [...this.#users.filter((u) => u.id !== userId)];
+  updateConnectionStatus = (sessionID, connected) => {
+    this.#users.get(sessionID).connected = connected;
+  }
+  removeUser = (sessionID) => {
+    const user = this.#users.get(sessionID).connected = false;
+    return user;
   };
-  rename = (userId, name) => {
-    const userIndex = this.#users.findIndex((u) => u.id === userId);
-    if (!userIndex) return;
-    this.#users[userIndex] = { ...this.#users[userIndex], name };
+  rename = (sessionID, username) => {
+    const user = this.#users.get(sessionID);
+    this.#users.set(user.sessionID, { ...user, username });
   };
 }
 

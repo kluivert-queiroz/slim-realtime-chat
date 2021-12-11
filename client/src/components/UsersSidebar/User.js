@@ -2,17 +2,17 @@ import { styled, Tooltip, Typography } from "@material-ui/core";
 import React from "react";
 import ChangeNicknameModal from "./ChangeNicknameModal";
 
-const User = ({ name, me, className }) => {
+const User = ({ username, me, className }) => {
   const modalRef = React.useRef();
   const handleClick = () => {
     if (modalRef.current) modalRef.current.triggerModal();
   };
   return (
     <div>
-      <Tooltip title="Click to edit your name" disableHoverListener={!me}>
+      <Tooltip title="Click to edit your username" disableHoverListener={!me}>
         <div className={className} onClick={handleClick}>
           <Typography variant="body1">
-            {name} {me && "(me)"}
+            {username} {me && "(me)"}
           </Typography>
         </div>
       </Tooltip>

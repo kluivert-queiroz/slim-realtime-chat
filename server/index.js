@@ -1,9 +1,18 @@
 const { server: express, app } = require("./server");
+const { v1: uuidv1 } = require("uuid");
 const { Server } = require("socket.io");
-const { 
-  v1: uuidv1,
-} = require('uuid');
-const UserMap = require("./src/UserMap");
+const { handleIncomeMessage } = require("./src/services/MessageService");
+const {
+  handleUserConnected,
+  handleUserRenaming,
+  handleUserDisconnected,
+  handleShowAllUsers,
+  findSession,
+} = require("./src/services/UserService");
+const {
+  handleUserIsTyping,
+  handleUserStoppedTyping,
+} = require("./src/services/ChatService");
 
 const io = new Server(express, {
   cors: {
@@ -15,37 +24,41 @@ const io = new Server(express, {
 app.get("/", (req, res) => {
   res.send("Express running!!");
 });
-const users = new UserMap();
 
 io.on("connection", (socket) => {
-  socket.on("send-message", (message) => {
-    io.emit("new-message", {...message, id: uuidv1()});
+  socket.emit("session", {
+    sessionID: socket.sessionID,
+    userID: socket.userID,
+    username: socket.username,
   });
-  socket.on("user-connected", ({ user }) => {
-    users.addUser({ id: socket.id, name: user });
-    io.emit("user-connected", {
-      id: socket.id,
-      name: user,
-      totalUsers: users.getUsers(),
-    });
-  });
-  socket.on("rename-user", ({ name }) => {
-    users.rename(socket.id, name);
-    io.emit("rename-user", {
-      id: socket.id,
-      totalUsers: users.getUsers(),
-    });
-  });
-  socket.on("started-typing", ({ user }) => {
-    io.emit("user-started-typing", { name: user });
-  });
-  socket.on("stopped-typing", ({ user }) => {
-    io.emit("user-stopped-typing", { name: user });
-  });
-  socket.on("disconnect", () => {
-    users.removeUser(socket.id);
-    io.emit("user-disconnect", { id: socket.id, totalUsers: users.getUsers() });
-  });
+  socket.emit("users", handleShowAllUsers());
+  socket.on("send-message", handleIncomeMessage(io, socket));
+  socket.on("user-connected", handleUserConnected(io, socket));
+  socket.on("rename-user", handleUserRenaming(io, socket));
+  socket.on("started-typing", handleUserIsTyping(io, socket));
+  socket.on("stopped-typing", handleUserStoppedTyping(io, socket));
+  socket.on("disconnect", handleUserDisconnected(io, socket));
 });
-console.log("Running on port: ", process.env.PORT || 5000);
+io.use((socket, next) => {
+  const sessionID = socket.handshake.auth.sessionID;
+  if (sessionID) {
+    // find existing session
+    const session = findSession(sessionID);
+    if (session) {
+      socket.sessionID = sessionID;
+      socket.userID = session.id;
+      socket.username = session.username;
+      return next();
+    }
+  }
+  const username = socket.handshake.auth.username;
+  if (!username) {
+    return next(new Error("invalid username"));
+  }
+  // create new session
+  socket.sessionID = uuidv1();
+  socket.userID = uuidv1();
+  socket.username = username;
+  next();
+});
 express.listen(process.env.PORT || 5000);

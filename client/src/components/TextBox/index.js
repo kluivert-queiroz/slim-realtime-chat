@@ -14,7 +14,7 @@ import TextArea from "./TextArea";
 
 const TextBox = ({ className }) => {
   const socket = React.useContext(SocketContext);
-  const me = useSelector((state) => state.name);
+  const me = useSelector((state) => state.username);
   const [usersTyping, setUsersTyping] = React.useState([]);
   const textArea = React.useRef();
   const handleClick = (e) => {
@@ -32,7 +32,7 @@ const TextBox = ({ className }) => {
     });
     socket.on("user-stopped-typing", (user) => {
       setUsersTyping((users) =>
-        users.filter((typingUser) => typingUser.name !== user.name)
+        users.filter((typingUser) => typingUser.username !== user.username)
       );
     });
   }, []);
@@ -41,7 +41,7 @@ const TextBox = ({ className }) => {
       {usersTyping.length > 0 && (
         <div className="typingBar">
           <Typography variant="body2">
-            {usersTyping.map((user) => user.name).join(", ")} are typing...
+            {usersTyping.map((user) => user.username).join(", ")} are typing...
           </Typography>
         </div>
       )}

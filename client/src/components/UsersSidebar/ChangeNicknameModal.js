@@ -33,7 +33,10 @@ const ChangeNicknameModal = React.forwardRef((props, ref) => {
   };
   const submitNickname = () => {
     dispatch({ type: "SET_NICKNAME", nickname });
-    socket.emit("rename-user", { name: nickname });
+    socket.emit("rename-user", {
+      username: nickname,
+      id: localStorage.getItem("userId"),
+    });
     setState(false);
   };
   return (
